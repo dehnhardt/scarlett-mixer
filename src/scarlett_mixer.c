@@ -59,6 +59,7 @@ typedef struct {
 	unsigned    num_pad;
 	unsigned    num_air;
 	bool        pads_are_switches;
+	bool		airs_are_enums;
 	bool        matrix_mix_column_major;
 	unsigned    matrix_mix_offset;
 	unsigned    matrix_mix_stride;
@@ -84,6 +85,7 @@ static Device devices[] = {
 		.num_pad = 0,
 		.num_air = 0,
 		.pads_are_switches = false,
+		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
 		.matrix_mix_offset = 33, .matrix_mix_stride = 7,
 		.matrix_in_offset = 32, .matrix_in_stride = 7,
@@ -104,6 +106,7 @@ static Device devices[] = {
 		.num_pad = 4,
 		.num_air = 0,
 		.pads_are_switches = false,
+		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
 		.matrix_mix_offset = 40, .matrix_mix_stride = 9, // < Matrix 01 Mix A
 		.matrix_in_offset = 39, .matrix_in_stride = 9,   // Matrix 01 Input, ENUM
@@ -124,6 +127,7 @@ static Device devices[] = {
 		.num_pad = 4, // XXX does the device have pad? bug in kernel-driver?
 		.num_air = 0,
 		.pads_are_switches = false,
+		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
 		.matrix_mix_offset = 26, .matrix_mix_stride = 9, // XXX stride should be 7, bug in kernel-driver ?!
 		.matrix_in_offset = 25, .matrix_in_stride = 9,   // XXX stride should be 7, bug in kernel-driver ?!
@@ -144,6 +148,7 @@ static Device devices[] = {
 		.num_pad = 0,
 		.num_air = 0,
 		.pads_are_switches = false,
+		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
 		.matrix_mix_offset = 50, .matrix_mix_stride = 9,
 		.matrix_in_offset = 49, .matrix_in_stride = 9,
@@ -155,6 +160,28 @@ static Device devices[] = {
 		.pad_map = { -1, -1, -1, -1 },
 	},
 	{
+		.name = "Scarlett 4i4 USB",
+		.smi = 8, .smo = 8,
+		.sin = 6, .sout = 4,
+		.smst = 0,
+		.samo = 4,
+		.num_hiz = 2,
+		.num_pad = 2, 
+		.num_air = 2, 
+		.pads_are_switches = false,
+		.airs_are_enums = true,
+		.matrix_mix_column_major = true,
+		.matrix_mix_offset = 6, .matrix_mix_stride = 8,
+		.matrix_in_offset = 54, .matrix_in_stride = 1,
+		.out_gain_map = { 69 /* Monitor 1 */, 72, 75 /* Headphone 1 */, 78, -1, -1 , -1, -1, -1, -1 },
+		.out_gain_labels = { "Monitor 1L", "Monitor 1R", "Headphone 1L", "Headphone 1R", "", "", "", "", "", "" },
+		.out_bus_map = { 71, 74, 77, 80, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+		.input_offset = 0,
+		.hiz_map = { 63, 66 },
+		.pad_map = { 64, 67, -1, -1 },
+		.air_map = { 62, 65 },
+	},
+	{
 		.name = "Scarlett 8i6 USB",
 		.smi = 8, .smo = 8,
 		.sin = 10, .sout = 6,
@@ -164,6 +191,7 @@ static Device devices[] = {
 		.num_pad = 2, 
 		.num_air = 2, 
 		.pads_are_switches = true,
+		.airs_are_enums = false,
 		.matrix_mix_column_major = true,
 		.matrix_mix_offset = 20, .matrix_mix_stride = 8,
 		.matrix_in_offset = 84, .matrix_in_stride = 1,
@@ -870,7 +898,12 @@ static bool cb_set_air (RobWidget* w, void* handle) {
 	RobTkApp* ui = (RobTkApp*)handle;
 	if (ui->disable_signals) return TRUE;
 	for (uint32_t i = 0; i < ui->device->num_air; ++i) {
-		set_switch (air (ui, i), robtk_cbtn_get_active (ui->btn_air[i]));
+		if (ui->device->airs_are_enums) {
+			int val = robtk_cbtn_get_active (ui->btn_air[i]) ? 1 : 0;
+			set_enum (air (ui, i), val);
+		} else {
+			set_switch (air (ui, i), robtk_cbtn_get_active (ui->btn_air[i]));
+		}
 	}
 	return TRUE;
 }
@@ -1401,8 +1434,13 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 
 	/* Airs */
 	for (unsigned int i = 0; i < ui->device->num_air; ++i) {
+/* DEBUG */ printf("FIXME: Introduce is air is enum\n");		
 		ui->btn_air[i] = robtk_cbtn_new ("Air", GBT_LED_LEFT, false);
+		if (ui->device->airs_are_enums) {
+			robtk_cbtn_set_active (ui->btn_air[i], get_enum (air (ui, i)) == 1);
+		} else {
 			robtk_cbtn_set_active (ui->btn_air[i], get_switch (air (ui, i)) == 1);
+		}
 		robtk_cbtn_set_callback (ui->btn_air[i], cb_set_air, ui);
 		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_air[i]),
 				i, i + 1, 5, 6, 0, 0, RTK_SHRINK, RTK_SHRINK);
@@ -1413,7 +1451,6 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 		int row = 4 * floor (o / 10); // beware of bleed into Hi-Z, Pads
 		int pc = 3 * (o / 2); /* stereo-pair column */
 		pc %= 15;
-
 		ui->out_sel[o] = robtk_select_new ();
 		Mctrl* sctrl = out_sel (ui, o);
 		set_select_values (ui->out_sel[o], sctrl);
