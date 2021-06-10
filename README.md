@@ -9,6 +9,7 @@ Currently supported models, first generation of
 
 third generation of
 - 8i6
+- WIP: 4i4
 
 This is just a GUI, the device **must** be supported by the ALSA Linux kernel device-driver.
 
