@@ -161,7 +161,7 @@ static Device devices[] = {
 	},
 	{
 		.name = "Scarlett 4i4 USB",
-		.smi = 8, .smo = 8,
+		.smi = 6, .smo = 6,
 		.sin = 6, .sout = 4,
 		.smst = 0,
 		.samo = 4,
@@ -1434,7 +1434,6 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 
 	/* Airs */
 	for (unsigned int i = 0; i < ui->device->num_air; ++i) {
-/* DEBUG */ printf("FIXME: Introduce is air is enum\n");		
 		ui->btn_air[i] = robtk_cbtn_new ("Air", GBT_LED_LEFT, false);
 		if (ui->device->airs_are_enums) {
 			robtk_cbtn_set_active (ui->btn_air[i], get_enum (air (ui, i)) == 1);
