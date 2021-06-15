@@ -36,6 +36,11 @@
 #define GD_CX 20.5
 #define GD_CY 15.5
 
+#define USB_ID(vendor, product) (((vendor) << 16) | (product))
+#define USB_ID_VENDOR(id) ((id) >> 16)
+#define USB_ID_PRODUCT(id) ((u16)(id))
+
+
 /* device specifics, see also
  * https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/sound/usb/mixer_scarlett.c#n635
  */
@@ -48,6 +53,7 @@
 
 typedef struct {
 	char        name[64];
+	unsigned    usb_id;
 	unsigned    smi;  //< mixer matrix inputs
 	unsigned    smo;  //< mixer matrix outputs
 	unsigned    sin;  //< inputs (capture select)
@@ -77,6 +83,7 @@ typedef struct {
 static Device devices[] = {
 	{
 		.name = "Scarlett 18i6 USB",
+		.usb_id= USB_ID(0x1235, 0x8004),
 		.smi = 18, .smo = 6,
 		.sin = 18, .sout = 6,
 		.smst = 3,
@@ -98,6 +105,7 @@ static Device devices[] = {
 	},
 	{
 		.name = "Scarlett 18i8 USB",
+		.usb_id= USB_ID(0x1235, 0x8014),
 		.smi = 18, .smo = 8,
 		.sin = 18, .sout = 8,
 		.smst = 4,
@@ -119,6 +127,7 @@ static Device devices[] = {
 	},
 	{
 		.name = "Scarlett 6i6 USB",
+		.usb_id= USB_ID(0x1235, 0x8012),
 		.smi = 6, .smo = 6,
 		.sin = 6, .sout = 6,
 		.smst = 3,
@@ -140,6 +149,7 @@ static Device devices[] = {
 	},
 	{
 		.name = "Scarlett 18i20 USB",
+		.usb_id= USB_ID(0x1235, 0x800c),
 		.smi = 18, .smo = 8,
 		.sin = 18, .sout = 20,
 		.smst = 10,
@@ -161,6 +171,7 @@ static Device devices[] = {
 	},
 	{
 		.name = "Scarlett 4i4 USB",
+		.usb_id= USB_ID(0x1235, 0x8212),
 		.smi = 6, .smo = 6,
 		.sin = 6, .sout = 4,
 		.smst = 0,
@@ -183,6 +194,7 @@ static Device devices[] = {
 	},
 	{
 		.name = "Scarlett 8i6 USB",
+		.usb_id= USB_ID(0x1235, 0x8213),
 		.smi = 8, .smo = 8,
 		.sin = 10, .sout = 6,
 		.smst = 0,
@@ -461,6 +473,33 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 		fprintf (stderr, "Control device %s hw info error: %s\n", card, snd_strerror (err));
 		return err;
 	}
+	
+
+	char filename[25];
+	int vendid;
+	int devid;
+
+	//case USB_ID(0x1235, 0x8012): /* Focusrite Scarlett 6i6 */
+	//case USB_ID(0x1235, 0x8002): /* Focusrite Scarlett 8i6 */
+	//case USB_ID(0x1235, 0x8004): /* Focusrite Scarlett 18i6 */
+	//case USB_ID(0x1235, 0x8014): /* Focusrite Scarlett 18i8 */
+	//case USB_ID(0x1235, 0x800c): /* Focusrite Scarlett 18i20 */
+	//case USB_ID(0x1235, 0x8203): /* Focusrite Scarlett 6i6 2nd Gen */
+	//case USB_ID(0x1235, 0x8204): /* Focusrite Scarlett 18i8 2nd Gen */
+	//case USB_ID(0x1235, 0x8201): /* Focusrite Scarlett 18i20 2nd Gen */
+	//case USB_ID(0x1235, 0x8210): /* Focusrite Scarlett 2i2 3rd Gen */
+	//case USB_ID(0x1235, 0x8211): /* Focusrite Scarlett Solo 3rd Gen */
+	//case USB_ID(0x1235, 0x8212): /* Focusrite Scarlett 4i4 3rd Gen */
+	//case USB_ID(0x1235, 0x8213): /* Focusrite Scarlett 8i6 3rd Gen */
+	//case USB_ID(0x1235, 0x8214): /* Focusrite Scarlett 18i8 3rd Gen */
+	//case USB_ID(0x1235, 0x8215): /* Focusrite Scarlett 18i20 3rd Gen */
+
+	int card_numb=snd_ctl_card_info_get_card (card_info);
+	sprintf(filename,"/proc/asound/card%i/usbid",card_numb);
+	FILE *f = fopen(filename, "r");
+	fscanf(f, "%x:%x", &vendid, &devid);
+	fclose(f);	
+	int usb_id=USB_ID(vendid,devid);
 
 	const char* card_name = snd_ctl_card_info_get_name (card_info);
 	snd_ctl_close (hctl);
@@ -473,8 +512,12 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 	ui->device = NULL;
 
 	for (unsigned i = 0; i < NUM_DEVICES; i++) {
-		if (!strcmp (card_name, devices[i].name))
+//		if (!strcmp (card_name, devices[i].name))
+//			ui->device = &devices[i];
+		if (usb_id==devices[i].usb_id) {
 			ui->device = &devices[i];
+			fprintf(stderr," found %s\n",devices[i].name);
+		}
 	}
 
 	if (ui->device == NULL) {
