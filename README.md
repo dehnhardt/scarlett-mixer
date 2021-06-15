@@ -8,8 +8,10 @@ Currently supported models, first generation of
 - 6i6 (untested)
 
 third generation of
-- 8i6
+- WiP: 8i6
 - WIP: 4i4
+
+based on https://github.com/HinTak/sound-usb-dkms branch v5.11-sadko4u-scarlett-gen3
 
 This is just a GUI, the device **must** be supported by the ALSA Linux kernel device-driver.
 
