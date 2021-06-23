@@ -1,0 +1,8 @@
+Device `Scarlett 2i2 USB' has 7 contols: 
+ 0 'Line In 1 Air', CPS
+ 1 'Line In 1 Level', ENUM
+ 2 'Line In 1-2 Phantom Power', CPS
+ 3 'Line In 2 Air', CPS
+ 4 'Line In 2 Level', ENUM
+ 5 'Direct Monitor', ENUM
+ 6 'Phantom Power Persistence', CPS

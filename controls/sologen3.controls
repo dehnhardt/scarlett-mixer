@@ -1,0 +1,6 @@
+Device `Scarlett Solo USB' has 5 contols: 
+ 0 'Line In 1 Air', CPS
+ 1 'Line In 1 Phantom Power', CPS
+ 2 'Line In 2 Level', ENUM
+ 3 'Direct Monitor', PBS
+ 4 'Phantom Power Persistence', CPS

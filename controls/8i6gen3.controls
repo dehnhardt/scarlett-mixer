@@ -1,0 +1,108 @@
+Device `Scarlett 8i6 USB' has 107 contols: 
+ 0 'PCM Out 01 Source', ENUM
+ 1 'PCM Out 02 Source', ENUM
+ 2 'PCM Out 03 Source', ENUM
+ 3 'PCM Out 04 Source', ENUM
+ 4 'PCM Out 05 Source', ENUM
+ 5 'PCM Out 06 Source', ENUM
+ 6 'PCM Out 07 Source', ENUM
+ 7 'PCM Out 08 Source', ENUM
+ 8 'PCM Out 09 Source', ENUM
+ 9 'PCM Out 10 Source', ENUM
+ 10 'Mix A In 01', PBS
+ 11 'Mix A In 02', PBS
+ 12 'Mix A In 03', PBS
+ 13 'Mix A In 04', PBS
+ 14 'Mix A In 05', PBS
+ 15 'Mix A In 06', PBS
+ 16 'Mix A In 07', PBS
+ 17 'Mix A In 08', PBS
+ 18 'Mix B In 01', PBS
+ 19 'Mix B In 02', PBS
+ 20 'Mix B In 03', PBS
+ 21 'Mix B In 04', PBS
+ 22 'Mix B In 05', PBS
+ 23 'Mix B In 06', PBS
+ 24 'Mix B In 07', PBS
+ 25 'Mix B In 08', PBS
+ 26 'Mix C In 01', PBS
+ 27 'Mix C In 02', PBS
+ 28 'Mix C In 03', PBS
+ 29 'Mix C In 04', PBS
+ 30 'Mix C In 05', PBS
+ 31 'Mix C In 06', PBS
+ 32 'Mix C In 07', PBS
+ 33 'Mix C In 08', PBS
+ 34 'Mix D In 01', PBS
+ 35 'Mix D In 02', PBS
+ 36 'Mix D In 03', PBS
+ 37 'Mix D In 04', PBS
+ 38 'Mix D In 05', PBS
+ 39 'Mix D In 06', PBS
+ 40 'Mix D In 07', PBS
+ 41 'Mix D In 08', PBS
+ 42 'Mix E In 01', PBS
+ 43 'Mix E In 02', PBS
+ 44 'Mix E In 03', PBS
+ 45 'Mix E In 04', PBS
+ 46 'Mix E In 05', PBS
+ 47 'Mix E In 06', PBS
+ 48 'Mix E In 07', PBS
+ 49 'Mix E In 08', PBS
+ 50 'Mix F In 01', PBS
+ 51 'Mix F In 02', PBS
+ 52 'Mix F In 03', PBS
+ 53 'Mix F In 04', PBS
+ 54 'Mix F In 05', PBS
+ 55 'Mix F In 06', PBS
+ 56 'Mix F In 07', PBS
+ 57 'Mix F In 08', PBS
+ 58 'Mix G In 01', PBS
+ 59 'Mix G In 02', PBS
+ 60 'Mix G In 03', PBS
+ 61 'Mix G In 04', PBS
+ 62 'Mix G In 05', PBS
+ 63 'Mix G In 06', PBS
+ 64 'Mix G In 07', PBS
+ 65 'Mix G In 08', PBS
+ 66 'Mix H In 01', PBS
+ 67 'Mix H In 02', PBS
+ 68 'Mix H In 03', PBS
+ 69 'Mix H In 04', PBS
+ 70 'Mix H In 05', PBS
+ 71 'Mix H In 06', PBS
+ 72 'Mix H In 07', PBS
+ 73 'Mix H In 08', PBS
+ 74 'Mix In 01 Source', ENUM
+ 75 'Mix In 02 Source', ENUM
+ 76 'Mix In 03 Source', ENUM
+ 77 'Mix In 04 Source', ENUM
+ 78 'Mix In 05 Source', ENUM
+ 79 'Mix In 06 Source', ENUM
+ 80 'Mix In 07 Source', ENUM
+ 81 'Mix In 08 Source', ENUM
+ 82 'Analogue In 01 Air', ENUM
+ 83 'Analogue In 01 Mode', ENUM
+ 84 'Analogue In 01 Pad', ENUM
+ 85 'Analogue In 02 Air', ENUM
+ 86 'Analogue In 02 Mode', ENUM
+ 87 'Analogue In 02 Pad', ENUM
+ 88 'Analogue In 48V', ENUM
+ 89 'Analogue In 48V Retain', ENUM
+ 90 'Analogue Out 01 (Headphones 1 L)'
+ 91 'Analogue Out 01 (Headphones 1 L) Mute', PBS
+ 92 'Analogue Out 01 (Headphones 1 L) Source', ENUM
+ 93 'Analogue Out 02 (Headphones 1 R)'
+ 94 'Analogue Out 02 (Headphones 1 R) Mute', PBS
+ 95 'Analogue Out 02 (Headphones 1 R) Source', ENUM
+ 96 'Analogue Out 03 (Headphones 2 L)'
+ 97 'Analogue Out 03 (Headphones 2 L) Mute', PBS
+ 98 'Analogue Out 03 (Headphones 2 L) Source', ENUM
+ 99 'Analogue Out 04 (Headphones 3 R)'
+ 100 'Analogue Out 04 (Headphones 3 R) Mute', PBS
+ 101 'Analogue Out 04 (Headphones 3 R) Source', ENUM
+ 102 'Clock Source Clock Source', ENUM
+ 103 'S/PDIF Out 1 Mute', PBS
+ 104 'S/PDIF Out 1 Source', ENUM
+ 105 'S/PDIF Out 2 Mute', PBS
+ 106 'S/PDIF Out 2 Source', ENUM

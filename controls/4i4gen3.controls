@@ -1,0 +1,81 @@
+ 0 'PCM Out 01 Source', ENUM
+ 1 'PCM Out 02 Source', ENUM
+ 2 'PCM Out 03 Source', ENUM
+ 3 'PCM Out 04 Source', ENUM
+ 4 'PCM Out 05 Source', ENUM
+ 5 'PCM Out 06 Source', ENUM
+ 6 'Mix A In 01', PBS
+ 7 'Mix A In 02', PBS
+ 8 'Mix A In 03', PBS
+ 9 'Mix A In 04', PBS
+ 10 'Mix A In 05', PBS
+ 11 'Mix A In 06', PBS
+ 12 'Mix A In 07', PBS
+ 13 'Mix A In 08', PBS
+ 14 'Mix B In 01', PBS
+ 15 'Mix B In 02', PBS
+ 16 'Mix B In 03', PBS
+ 17 'Mix B In 04', PBS
+ 18 'Mix B In 05', PBS
+ 19 'Mix B In 06', PBS
+ 20 'Mix B In 07', PBS
+ 21 'Mix B In 08', PBS
+ 22 'Mix C In 01', PBS
+ 23 'Mix C In 02', PBS
+ 24 'Mix C In 03', PBS
+ 25 'Mix C In 04', PBS
+ 26 'Mix C In 05', PBS
+ 27 'Mix C In 06', PBS
+ 28 'Mix C In 07', PBS
+ 29 'Mix C In 08', PBS
+ 30 'Mix D In 01', PBS
+ 31 'Mix D In 02', PBS
+ 32 'Mix D In 03', PBS
+ 33 'Mix D In 04', PBS
+ 34 'Mix D In 05', PBS
+ 35 'Mix D In 06', PBS
+ 36 'Mix D In 07', PBS
+ 37 'Mix D In 08', PBS
+ 38 'Mix E In 01', PBS
+ 39 'Mix E In 02', PBS
+ 40 'Mix E In 03', PBS
+ 41 'Mix E In 04', PBS
+ 42 'Mix E In 05', PBS
+ 43 'Mix E In 06', PBS
+ 44 'Mix E In 07', PBS
+ 45 'Mix E In 08', PBS
+ 46 'Mix F In 01', PBS
+ 47 'Mix F In 02', PBS
+ 48 'Mix F In 03', PBS
+ 49 'Mix F In 04', PBS
+ 50 'Mix F In 05', PBS
+ 51 'Mix F In 06', PBS
+ 52 'Mix F In 07', PBS
+ 53 'Mix F In 08', PBS
+ 54 'Mix In 01 Source', ENUM
+ 55 'Mix In 02 Source', ENUM
+ 56 'Mix In 03 Source', ENUM
+ 57 'Mix In 04 Source', ENUM
+ 58 'Mix In 05 Source', ENUM
+ 59 'Mix In 06 Source', ENUM
+ 60 'Mix In 07 Source', ENUM
+ 61 'Mix In 08 Source', ENUM
+ 62 'Analogue In 01 Air', ENUM
+ 63 'Analogue In 01 Mode', ENUM
+ 64 'Analogue In 01 Pad', ENUM
+ 65 'Analogue In 02 Air', ENUM
+ 66 'Analogue In 02 Mode', ENUM
+ 67 'Analogue In 02 Pad', ENUM
+ 68 'Analogue In 48V', ENUM
+ 69 'Analogue Out 01 (Monitor L)'
+ 70 'Analogue Out 01 (Monitor L) Mute', PBS
+ 71 'Analogue Out 01 (Monitor L) Source', ENUM
+ 72 'Analogue Out 02 (Monitor R)'
+ 73 'Analogue Out 02 (Monitor R) Mute', PBS
+ 74 'Analogue Out 02 (Monitor R) Source', ENUM
+ 75 'Analogue Out 03 (Headphones L)'
+ 76 'Analogue Out 03 (Headphones L) Mute', PBS
+ 77 'Analogue Out 03 (Headphones L) Source', ENUM
+ 78 'Analogue Out 04 (Headphones R)'
+ 79 'Analogue Out 04 (Headphones R) Mute', PBS
+ 80 'Analogue Out 04 (Headphones R) Source', ENUM
