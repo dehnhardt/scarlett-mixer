@@ -78,6 +78,8 @@ typedef struct {
 	int         hiz_map[MAX_HIZS];
 	int         pad_map[MAX_PADS];
 	int         air_map[MAX_AIRS];
+	int		    direct_monitor_map;    // map to DM Switch if present, else -1
+	int 	    phantom_power_map;     // map to 48V phantom power switch if present, else -1
 } Device;
 
 static Device devices[] = {
@@ -102,6 +104,8 @@ static Device devices[] = {
 		.out_bus_map = { 2, 3, 5, 6, 8, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, // Source, ENUM
 		.hiz_map = { 12, 13 },
 		.pad_map = { -1, -1, -1, -1 },
+		.direct_monitor_map = -1,
+		.phantom_power_map=-1,
 	},
 	{
 		.name = "Scarlett 18i8 USB",
@@ -124,6 +128,8 @@ static Device devices[] = {
 		.out_bus_map = { 2, 3, 5, 6, 8, 9, 11, 12, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 		.hiz_map = { 15, 17 }, // < Input 1 Impedance, ENUM,  Input 2 Impedance, ENUM
 		.pad_map = { 16, 18, 19, 20 },
+		.direct_monitor_map = -1,
+		.phantom_power_map=-1,
 	},
 	{
 		.name = "Scarlett 6i6 USB",
@@ -146,6 +152,8 @@ static Device devices[] = {
 		.input_offset = 18,
 		.hiz_map = { 12, 14 },
 		.pad_map = { 13, 15, 16, 17 },
+		.direct_monitor_map = -1,
+		.phantom_power_map=-1,
 	},
 	{
 		.name = "Scarlett 18i20 USB",
@@ -168,9 +176,37 @@ static Device devices[] = {
 		.out_bus_map = { 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 3, 4 },
 		.hiz_map = { -1, -1 },
 		.pad_map = { -1, -1, -1, -1 },
+		.direct_monitor_map = -1,
+		.phantom_power_map=-1,
+	},
+	
+	{
+		.name = "Scarlett Solo 3rd Gen",
+		.usb_id= USB_ID(0x1235, 0x8211),
+		.smi = 0, .smo = 0, // No HW Mixer
+		.sin = 0, .sout = 0, // 2in, 2out
+		.smst = 0,
+		.samo = 0,
+		.num_hiz = 1,
+		.num_pad = 0, 
+		.num_air = 1, 
+		.pads_are_switches = false,
+		.airs_are_enums = false,
+		.matrix_mix_column_major = true,
+		.matrix_mix_offset = 6, .matrix_mix_stride = 8,
+		.matrix_in_offset = 54, .matrix_in_stride = 1,
+		.out_gain_map = { 69 /* Monitor 1 */, 72, 75 /* Headphone 1 */, 78, -1, -1 , -1, -1, -1, -1 },
+		.out_gain_labels = { "Monitor 1L", "Monitor 1R", "Headphone 1L", "Headphone 1R", "", "", "", "", "", "" },
+		.out_bus_map = { 71, 74, 77, 80, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+		.input_offset = 0,
+		.hiz_map = { 2 },
+		.pad_map = { },
+		.air_map = { 0 },
+		.direct_monitor_map = 3,
+		.phantom_power_map= 1,
 	},
 	{
-		.name = "Scarlett 4i4 USB",
+		.name = "Scarlett 4i4 3rd Gen",
 		.usb_id= USB_ID(0x1235, 0x8212),
 		.smi = 6, .smo = 6,
 		.sin = 6, .sout = 4,
@@ -191,9 +227,11 @@ static Device devices[] = {
 		.hiz_map = { 63, 66 },
 		.pad_map = { 64, 67, -1, -1 },
 		.air_map = { 62, 65 },
+		.direct_monitor_map = -1,
+		.phantom_power_map=-1,
 	},
 	{
-		.name = "Scarlett 8i6 USB",
+		.name = "Scarlett 8i6 3rd Gen",
 		.usb_id= USB_ID(0x1235, 0x8213),
 		.smi = 8, .smo = 8,
 		.sin = 10, .sout = 6,
@@ -214,6 +252,8 @@ static Device devices[] = {
 		.hiz_map = { 83, 86 },
 		.pad_map = { 84, 87, -1, -1 },
 		.air_map = { 82, 85 },
+		.direct_monitor_map = -1,
+		.phantom_power_map=-1,
 	},
 };
 
@@ -251,6 +291,8 @@ typedef struct {
 	RobTkCBtn**     btn_hiz;
 	RobTkCBtn**     btn_pad;
 	RobTkCBtn**     btn_air;
+	RobTkCBtn*      btn_phantom_power;
+	RobTkCBtn*      btn_direct_monitor;
 	RobTkPBtn*      btn_reset;
 
 	RobTkLbl*       heading[3];
@@ -397,6 +439,20 @@ static Mctrl* air (RobTkApp *ui, unsigned c)
 {
 	assert (c < ui->device->num_air);
 	return &ui->ctrl[ui->device->air_map[c]];
+}
+
+/* Phantom Switch*/
+static Mctrl* phantom (RobTkApp *ui)
+{
+	assert (ui->device->phantom_power_map>=0);
+	return &ui->ctrl[ui->device->phantom_power_map];
+}
+
+/* Direct Monitor Switch*/
+static Mctrl* direct_monitor (RobTkApp *ui)
+{
+	assert (ui->device->direct_monitor_map>=0);
+	return &ui->ctrl[ui->device->direct_monitor_map];
 }
 
 /* master gain */
@@ -817,11 +873,25 @@ static void set_switch (Mctrl* c, bool on)
 	snd_mixer_selem_set_capture_switch (c->elem, 0, v);
 }
 
+static void set_pb_switch (Mctrl* c, bool on)
+{
+	int v = on ? 1 : 0;
+	assert (c && snd_mixer_selem_has_playback_switch (c->elem));
+	snd_mixer_selem_set_playback_switch (c->elem, 0, v);
+}
+
 static bool get_switch (Mctrl* c)
 {
 	int v = 0;
 	assert (c && snd_mixer_selem_has_capture_switch (c->elem));
 	snd_mixer_selem_get_capture_switch (c->elem, (snd_mixer_selem_channel_id_t)0, &v);
+	return v == 1;
+}
+static bool get_pb_switch (Mctrl* c)
+{
+	int v = 0;
+	assert (c && snd_mixer_selem_has_playback_switch (c->elem));
+	snd_mixer_selem_get_playback_switch (c->elem, (snd_mixer_selem_channel_id_t)0, &v);
 	return v == 1;
 }
 
@@ -948,6 +1018,20 @@ static bool cb_set_air (RobWidget* w, void* handle) {
 			set_switch (air (ui, i), robtk_cbtn_get_active (ui->btn_air[i]));
 		}
 	}
+	return TRUE;
+}
+
+static bool cb_set_phantom_power (RobWidget* w, void* handle) {
+	RobTkApp* ui = (RobTkApp*)handle;
+	if (ui->disable_signals) return TRUE;
+	set_switch (phantom (ui), robtk_cbtn_get_active (ui->btn_phantom_power));
+	return TRUE;
+}
+
+static bool cb_set_direct_monitor (RobWidget* w, void* handle) {
+	RobTkApp* ui = (RobTkApp*)handle;
+	if (ui->disable_signals) return TRUE;
+	set_pb_switch (direct_monitor (ui), robtk_cbtn_get_active (ui->btn_direct_monitor));
 	return TRUE;
 }
 
@@ -1263,8 +1347,12 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 	rob_table_attach (ui->matrix, robtk_lbl_widget (ui->heading[0]), 2, 3, 0, 1, 2, 6, RTK_EXANDF, RTK_SHRINK);
 	ui->heading[1]  = robtk_lbl_new ("Source");
 	rob_table_attach (ui->matrix, robtk_lbl_widget (ui->heading[1]), c0, c0 + 1, 0, 1, 2, 6, RTK_SHRINK, RTK_SHRINK);
+
 	ui->heading[2]  = robtk_lbl_new ("Matrix Mixer");
-	rob_table_attach (ui->matrix, robtk_lbl_widget (ui->heading[2]), c0 + 1, c0 + 1 + ui->device->smo, 0, 1, 2, 6, RTK_SHRINK, RTK_SHRINK);
+
+	if (ui->device->smo>0){
+		rob_table_attach (ui->matrix, robtk_lbl_widget (ui->heading[2]), c0 + 1, c0 + 1 + ui->device->smo, 0, 1, 2, 6, RTK_SHRINK, RTK_SHRINK);
+	}
 
 	/* input selectors */
 	for (unsigned r = 0; r < ui->device->sin; ++r) {
@@ -1451,6 +1539,24 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 
 		ui->sel_lbl[o]  = robtk_lbl_new (out_select_label (ui, o));
 		rob_table_attach (ui->output, robtk_lbl_widget (ui->sel_lbl[o]), 3 * oc + 2, 3 * oc + 5, row, row + 1, 2, 2, RTK_SHRINK, RTK_SHRINK);
+	}
+
+	/* 48V Phantom Power */
+	if (ui->device->phantom_power_map>-1) {
+		ui->btn_phantom_power = robtk_cbtn_new ("48V", GBT_LED_LEFT, false);
+		robtk_cbtn_set_active (ui->btn_phantom_power, get_switch (phantom (ui)) == 1);
+		robtk_cbtn_set_callback (ui->btn_phantom_power, cb_set_phantom_power, ui);
+		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_phantom_power),
+				0, 1, 6, 7, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	}
+
+	/* Direct Monitoring */
+	if (ui->device->direct_monitor_map>-1) {
+		ui->btn_direct_monitor = robtk_cbtn_new ("Direct Monitor", GBT_LED_LEFT, false);
+		robtk_cbtn_set_active (ui->btn_direct_monitor, get_pb_switch (direct_monitor (ui)) == 1);
+		robtk_cbtn_set_callback (ui->btn_direct_monitor, cb_set_direct_monitor, ui);
+		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_direct_monitor),
+				0, 1, 7, 8, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 
 	/* Hi-Z*/

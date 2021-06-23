@@ -8,8 +8,9 @@ Currently supported models, first generation of
 - 6i6 (untested)
 
 WiP Scarlett Focusrite 3rd gen
-- 8i6
+- Solo
 - 4i4
+- 8i6
 
 based on https://github.com/HinTak/sound-usb-dkms branch v5.11-sadko4u-scarlett-gen3
 
