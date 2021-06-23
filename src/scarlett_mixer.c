@@ -179,7 +179,6 @@ static Device devices[] = {
 		.direct_monitor_map = -1,
 		.phantom_power_map=-1,
 	},
-	
 	{
 		.name = "Scarlett Solo 3rd Gen",
 		.usb_id= USB_ID(0x1235, 0x8211),
@@ -204,6 +203,31 @@ static Device devices[] = {
 		.air_map = { 0 },
 		.direct_monitor_map = 3,
 		.phantom_power_map= 1,
+	},
+	{
+		.name = "Scarlett 2i2 3rd Gen",
+		.usb_id= USB_ID(0x1235, 0x8210),
+		.smi = 0, .smo = 0, // No HW Mixer
+		.sin = 0, .sout = 0, // 2in, 2out
+		.smst = 0,
+		.samo = 0,
+		.num_hiz = 2,
+		.num_pad = 0, 
+		.num_air = 2, 
+		.pads_are_switches = false,
+		.airs_are_enums = false,
+		.matrix_mix_column_major = true,
+		.matrix_mix_offset = 6, .matrix_mix_stride = 8,
+		.matrix_in_offset = 54, .matrix_in_stride = 1,
+		.out_gain_map = { 69 /* Monitor 1 */, 72, 75 /* Headphone 1 */, 78, -1, -1 , -1, -1, -1, -1 },
+		.out_gain_labels = { "Monitor 1L", "Monitor 1R", "Headphone 1L", "Headphone 1R", "", "", "", "", "", "" },
+		.out_bus_map = { 71, 74, 77, 80, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+		.input_offset = 0,
+		.hiz_map = { 1, 4 },
+		.pad_map = { },
+		.air_map = { 0, 3 },
+		.direct_monitor_map = -1, /*TODO: Direct Monitor as ENUM */
+		.phantom_power_map= 2,
 	},
 	{
 		.name = "Scarlett 4i4 3rd Gen",

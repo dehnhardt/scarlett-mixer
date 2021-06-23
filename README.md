@@ -9,6 +9,7 @@ Currently supported models, first generation of
 
 WiP Scarlett Focusrite 3rd gen
 - Solo
+- 2i2
 - 4i4
 - 8i6
 
