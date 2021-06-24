@@ -198,9 +198,9 @@ static Device devices[] = {
 		.out_gain_labels = { "Monitor 1L", "Monitor 1R", "Headphone 1L", "Headphone 1R", "", "", "", "", "", "" },
 		.out_bus_map = { 71, 74, 77, 80, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 		.input_offset = 0,
-		.hiz_map = { 2 },
-		.pad_map = { },
-		.air_map = { 0 },
+		.hiz_map = { 2, -1 },
+		.pad_map = { -1,-1,-1,-1},
+		.air_map = { 0, -1 },
 		.direct_monitor_map = 3,
 		.phantom_power_map= 1,
 	},
@@ -224,7 +224,7 @@ static Device devices[] = {
 		.out_bus_map = { 71, 74, 77, 80, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 		.input_offset = 0,
 		.hiz_map = { 1, 4 },
-		.pad_map = { },
+		.pad_map = { -1,-1,-1,-1},
 		.air_map = { 0, 3 },
 		.direct_monitor_map = -1, /*TODO: Direct Monitor as ENUM */
 		.phantom_power_map= 2,
@@ -251,8 +251,8 @@ static Device devices[] = {
 		.hiz_map = { 63, 66 },
 		.pad_map = { 64, 67, -1, -1 },
 		.air_map = { 62, 65 },
-		.direct_monitor_map = -1,
-		.phantom_power_map=-1,
+		.direct_monitor_map = -1, 
+		.phantom_power_map=-1,/* theoretically, 17 */
 	},
 	{
 		.name = "Scarlett 8i6 3rd Gen",
@@ -468,7 +468,7 @@ static Mctrl* air (RobTkApp *ui, unsigned c)
 /* Phantom Switch*/
 static Mctrl* phantom (RobTkApp *ui)
 {
-	assert (ui->device->phantom_power_map>=0);
+	assert (ui->device->phantom_power_map>-1);
 	return &ui->ctrl[ui->device->phantom_power_map];
 }
 
@@ -658,6 +658,10 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 	for (int i = 0; i < MAX_BUSSES; ++i) { d.out_bus_map[i] = -1; }
 	for (int i = 0; i < MAX_HIZS; ++i) { d.hiz_map[i] = -1; }
 	for (int i = 0; i < MAX_PADS; ++i) { d.pad_map[i] = -1; }
+	
+	d.direct_monitor_map=-1;
+	d.phantom_power_map=-1;
+
 	int obm = 0;
 
 	int i = 0;
@@ -677,6 +681,9 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 				}
 				if (strstr (c->name, " Pad")) {
 					d.pad_map[d.num_pad++] = i;
+				}
+				if (strstr(c->name,"Direct Monitor")){
+					d.direct_monitor_map = i;
 				}
 				if (strstr (c->name, "Input Source 01") || strstr (c->name, "PCM 01")) {
 					assert (d.input_offset == 0);
@@ -725,13 +732,18 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 					}
 					d.out_gain_map[d.smst++] = i;
 					d.sout = d.smst * 2;
+				} else if (strstr(c->name,"Direct Monitor")){
+					d.direct_monitor_map = i;
 				}
 			} else if (snd_mixer_selem_has_capture_switch (elem)) {
+
 				if (strstr (c->name, " Pad")) {
 					d.pad_map[d.num_pad++] = i;
 					d.pads_are_switches = true;
 				} else if (strstr (c->name, " Air")) {
 					d.air_map[d.num_air++] = i;
+				} else if (strstr(c->name," Phantom Power")){
+					d.phantom_power_map = i;
 				}
 			} else {
 				if (strstr (c->name, "Line 0") || strstr (c->name, "Line 1")) {
