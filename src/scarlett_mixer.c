@@ -50,6 +50,7 @@
 #define MAX_HIZS    2
 #define MAX_PADS    8
 #define MAX_AIRS    8
+#define MAX_PHANTOM 2
 
 typedef struct {
 	char        name[64];
@@ -64,6 +65,7 @@ typedef struct {
 	unsigned    num_hiz;
 	unsigned    num_pad;
 	unsigned    num_air;
+	unsigned	num_pwr;
 	bool        pads_are_switches;
 	bool		airs_are_enums;
 	bool        matrix_mix_column_major;
@@ -80,7 +82,7 @@ typedef struct {
 	int         pad_map[MAX_PADS];
 	int         air_map[MAX_AIRS];
 	int		    direct_monitor_map;    // map to DM Switch if present, else -1
-	int 	    phantom_power_map;     // map to 48V phantom power switch if present, else -1
+	int 	    phantom_power_map[MAX_PHANTOM];     // map to 48V phantom power switch if present, else -1
 } Device;
 
 static Device devices[] = {
@@ -94,6 +96,7 @@ static Device devices[] = {
 		.num_hiz = 2,
 		.num_pad = 0,
 		.num_air = 0,
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
@@ -106,7 +109,7 @@ static Device devices[] = {
 		.hiz_map = { 12, 13 },
 		.pad_map = { -1, -1, -1, -1 },
 		.direct_monitor_map = -1,
-		.phantom_power_map=-1,
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett 18i8 USB",
@@ -118,6 +121,7 @@ static Device devices[] = {
 		.num_hiz = 2,
 		.num_pad = 4,
 		.num_air = 0,
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
@@ -130,7 +134,7 @@ static Device devices[] = {
 		.hiz_map = { 15, 17 }, // < Input 1 Impedance, ENUM,  Input 2 Impedance, ENUM
 		.pad_map = { 16, 18, 19, 20 },
 		.direct_monitor_map = -1,
-		.phantom_power_map=-1,
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett 6i6 USB",
@@ -142,6 +146,7 @@ static Device devices[] = {
 		.num_hiz = 2,
 		.num_pad = 4, // XXX does the device have pad? bug in kernel-driver?
 		.num_air = 0,
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
@@ -154,7 +159,7 @@ static Device devices[] = {
 		.hiz_map = { 12, 14 },
 		.pad_map = { 13, 15, 16, 17 },
 		.direct_monitor_map = -1,
-		.phantom_power_map=-1,
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett 18i20 USB",
@@ -166,6 +171,7 @@ static Device devices[] = {
 		.num_hiz = 0,
 		.num_pad = 0,
 		.num_air = 0,
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = false,
 		.matrix_mix_column_major = false,
@@ -178,7 +184,7 @@ static Device devices[] = {
 		.hiz_map = { -1, -1 },
 		.pad_map = { -1, -1, -1, -1 },
 		.direct_monitor_map = -1,
-		.phantom_power_map=-1,
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett Solo 3rd Gen",
@@ -190,6 +196,7 @@ static Device devices[] = {
 		.num_hiz = 1,
 		.num_pad = 0, 
 		.num_air = 1, 
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = false,
 		.matrix_mix_column_major = true,
@@ -203,7 +210,7 @@ static Device devices[] = {
 		.pad_map = { -1,-1,-1,-1},
 		.air_map = { 0, -1 },
 		.direct_monitor_map = 3,
-		.phantom_power_map= 1,
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett 2i2 3rd Gen",
@@ -215,6 +222,7 @@ static Device devices[] = {
 		.num_hiz = 2,
 		.num_pad = 0, 
 		.num_air = 2, 
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = false,
 		.matrix_mix_column_major = true,
@@ -228,7 +236,7 @@ static Device devices[] = {
 		.pad_map = { -1,-1,-1,-1},
 		.air_map = { 0, 3 },
 		.direct_monitor_map = -1, /*TODO: Direct Monitor as ENUM */
-		.phantom_power_map= 2,
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett 4i4 3rd Gen",
@@ -240,6 +248,7 @@ static Device devices[] = {
 		.num_hiz = 2,
 		.num_pad = 2, 
 		.num_air = 2, 
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = true,
 		.matrix_mix_column_major = true,
@@ -253,7 +262,7 @@ static Device devices[] = {
 		.pad_map = { 64, 67, -1, -1 },
 		.air_map = { 62, 65 },
 		.direct_monitor_map = -1, 
-		.phantom_power_map=-1,/* theoretically, 17 */
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett 8i6 3rd Gen",
@@ -265,6 +274,7 @@ static Device devices[] = {
 		.num_hiz = 2,
 		.num_pad = 2, 
 		.num_air = 2, 
+		.num_pwr = 0,
 		.pads_are_switches = false,
 		.airs_are_enums = true,
 		.matrix_mix_column_major = true,
@@ -278,7 +288,7 @@ static Device devices[] = {
 		.pad_map = { 84, 87, -1, -1 },
 		.air_map = { 82, 85 },
 		.direct_monitor_map = -1,
-		.phantom_power_map=-1,
+		.phantom_power_map={},
 	},
 	{
 		.name = "Scarlett 18i20 3rd Gen",
@@ -290,6 +300,7 @@ static Device devices[] = {
 		.num_hiz = 2,
 		.num_pad = 8, 
 		.num_air = 8, 
+		.num_pwr = 2,
 		.pads_are_switches = true,
 		.airs_are_enums = false,
 		.matrix_mix_column_major = true,
@@ -304,7 +315,7 @@ static Device devices[] = {
 		.pad_map = { 44, 48, 50, 52, 54, 57, 59, 61 },
 		.air_map = { 42, 46, 49, 51, 53, 56, 58, 60 },
 		.direct_monitor_map = -1,
-		.phantom_power_map= -1,
+		.phantom_power_map= {45, 55},
 	},
 };
 
@@ -323,7 +334,7 @@ typedef struct {
 	RobTkDial**     mtx_gain;
 	RobTkLbl**      mtx_lbl;
 
-	RobTkSep*       sep_h;
+	RobTkSep*       sep_h[3];
 	RobTkSep*       sep_v;
 	RobTkSep*       spc_v[2];
 
@@ -343,11 +354,11 @@ typedef struct {
 	RobTkCBtn**     btn_hiz;
 	RobTkCBtn**     btn_pad;
 	RobTkCBtn**     btn_air;
-	RobTkCBtn*      btn_phantom_power;
+	RobTkCBtn**     btn_phantom_power;
 	RobTkCBtn*      btn_direct_monitor;
 	RobTkPBtn*      btn_reset;
 
-	RobTkLbl*       heading[5];
+	RobTkLbl*       heading[6];
 
 	PangoFontDescription* font;
 	cairo_surface_t*      mtx_sf[6];
@@ -500,10 +511,10 @@ static Mctrl* air (RobTkApp *ui, unsigned c)
 }
 
 /* Phantom Switch*/
-static Mctrl* phantom (RobTkApp *ui)
+static Mctrl* phantom (RobTkApp *ui, unsigned c)
 {
-	assert (ui->device->phantom_power_map>-1);
-	return &ui->ctrl[ui->device->phantom_power_map];
+	assert (c < ui->device->num_pwr);
+	return &ui->ctrl[ui->device->phantom_power_map[c]];
 }
 
 /* Direct Monitor Switch*/
@@ -695,7 +706,7 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 	for (int i = 0; i < MAX_PADS; ++i) { d.pad_map[i] = -1; }
 	
 	d.direct_monitor_map=-1;
-	d.phantom_power_map=-1;
+	//d.phantom_power_map=-1;
 
 	int obm = 0;
 	int obusl = 0;
@@ -785,7 +796,8 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 				} else if (strstr (c->name, " Air")) {
 					d.air_map[d.num_air++] = i;
 				} else if (strstr(c->name," Phantom Power")){
-					d.phantom_power_map = i;
+					d.phantom_power_map[d.num_pwr++] = i;
+					// d.phantom_power_map = i;
 				}
 			} else {
 				if (strlen ( c->name ) > 9 && (strstr (c->name, "Line 0") || strstr (c->name, "Line 1"))) {
@@ -1102,7 +1114,9 @@ static bool cb_set_air (RobWidget* w, void* handle) {
 static bool cb_set_phantom_power (RobWidget* w, void* handle) {
 	RobTkApp* ui = (RobTkApp*)handle;
 	if (ui->disable_signals) return TRUE;
-	set_switch (phantom (ui), robtk_cbtn_get_active (ui->btn_phantom_power));
+	for( uint32_t i=0; i < ui->device->num_pwr; ++ i ){
+		set_switch (phantom (ui, i), robtk_cbtn_get_active (ui->btn_phantom_power[i]));
+	}
 	return TRUE;
 }
 
@@ -1414,6 +1428,16 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 		ui->btn_air = NULL;
 	}
 
+	if  (ui->device->num_pwr > 0) {
+		ui->btn_phantom_power = malloc (ui->device->num_pwr * sizeof (RobTkCBtn *));
+	} else {
+		ui->btn_phantom_power = NULL;
+	}
+
+	for( int i = 0; i < 3; ++i )
+		ui->sep_h[i] = robtk_sep_new (TRUE);
+
+
 	const int c0 = 4; // matrix column offset
 	const int rb = 2 + ui->device->smi; // matrix bottom
 
@@ -1429,7 +1453,8 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 
 	ui->heading[2]  = robtk_lbl_new ("Matrix Mixer");
 	ui->heading[3]  = robtk_lbl_new ("Imput Controls");
-	ui->heading[4]  = robtk_lbl_new ("Sinks");
+	ui->heading[4]  = robtk_lbl_new ("Out Volumes");
+	ui->heading[5]  = robtk_lbl_new ("Sinks");
 
 	if (ui->device->smo>0){
 		rob_table_attach (ui->matrix, robtk_lbl_widget (ui->heading[2]), c0 + 1, c0 + 1 + ui->device->smo, 0, 1, 2, 6, RTK_SHRINK, RTK_SHRINK);
@@ -1534,6 +1559,91 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 		rob_table_attach (ui->matrix, robtk_lbl_widget (ui->mtx_lbl[c]), c0 + c + 1, c0 + c + 2, r + 1, r + 2, 2, 2, RTK_SHRINK, RTK_SHRINK);
 	}
 
+
+	int outRow = 0;
+	int maxCols = 8;
+
+	rob_table_attach (ui->output, robtk_lbl_widget (ui->heading[3]), 0, 8, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
+	// 48V Phantom Power 
+	for (unsigned int i = 0; i < ui->device->num_pwr; ++i) {
+		ui->btn_phantom_power[i] = robtk_cbtn_new ("48V", GBT_LED_LEFT, false);
+		robtk_cbtn_set_active (ui->btn_phantom_power[i], get_switch (phantom (ui, i )) == 1);
+		robtk_cbtn_set_callback (ui->btn_phantom_power[i], cb_set_phantom_power, ui);
+		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_phantom_power[i]),
+				i, i+1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	}
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
+	// Direct Monitoring 
+	if (ui->device->direct_monitor_map>-1) {
+		ui->btn_direct_monitor = robtk_cbtn_new ("Direct Monitor", GBT_LED_LEFT, false);
+		robtk_cbtn_set_active (ui->btn_direct_monitor, get_pb_switch (direct_monitor (ui)) == 1);
+		robtk_cbtn_set_callback (ui->btn_direct_monitor, cb_set_direct_monitor, ui);
+		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_direct_monitor),
+				0, 1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	}
+	++outRow;	
+	printf ("--- Row: %d\n", outRow);
+
+	// Hi-Z
+	for (unsigned int i = 0; i < ui->device->num_hiz; ++i) {
+		ui->btn_hiz[i] = robtk_cbtn_new ("HiZ", GBT_LED_LEFT, false);
+		robtk_cbtn_set_active (ui->btn_hiz[i], get_enum (hiz (ui, i)) == 1);
+		robtk_cbtn_set_callback (ui->btn_hiz[i], cb_set_hiz, ui);
+		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_hiz[i]),
+				i, i + 1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	}
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
+	// Pads 
+	for (unsigned int i = 0; i < ui->device->num_pad; ++i) {
+		ui->btn_pad[i] = robtk_cbtn_new ("Pad", GBT_LED_LEFT, false);
+		if (ui->device->pads_are_switches) {
+			robtk_cbtn_set_active (ui->btn_pad[i], get_switch (pad (ui, i)) == 1);
+		} else {
+			robtk_cbtn_set_active (ui->btn_pad[i], get_enum (pad (ui, i)) == 1);
+		}
+		robtk_cbtn_set_callback (ui->btn_pad[i], cb_set_pad, ui);
+		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_pad[i]),
+				i, i + 1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	}
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
+	// Airs 
+	for (unsigned int i = 0; i < ui->device->num_air; ++i) {
+		ui->btn_air[i] = robtk_cbtn_new ("Air", GBT_LED_LEFT, false);
+		if (ui->device->airs_are_enums) {
+			robtk_cbtn_set_active (ui->btn_air[i], get_enum (air (ui, i)) == 1);
+		} else {
+			robtk_cbtn_set_active (ui->btn_air[i], get_switch (air (ui, i)) == 1);
+		}
+		robtk_cbtn_set_callback (ui->btn_air[i], cb_set_air, ui);
+		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_air[i]),
+				i, i + 1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	}
+
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
+	rob_table_attach (ui->output, robtk_sep_widget (ui->sep_h[1]), 0, maxCols, outRow, outRow+1, maxCols, 0, RTK_FILL, RTK_FILL);
+
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
+	if (ui->device->sout > 0){
+		rob_table_attach (ui->output, robtk_lbl_widget (ui->heading[4]), 0, 1 + ui->device->sout, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	}
+
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
 	/*** output Table ***/
 
 	/* master level */
@@ -1555,12 +1665,14 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 		robtk_dial_set_state (ui->mst_gain, get_mute (ctrl) ? 1 : 0);
 		robtk_dial_set_callback (ui->mst_gain, cb_mst_gain, ui);
 		robtk_dial_annotation_callback (ui->mst_gain, dial_annotation_db, ui);
-		rob_table_attach (ui->output, robtk_dial_widget (ui->mst_gain), 0, 2, 1, 3, 2, 0, RTK_SHRINK, RTK_SHRINK);
+		rob_table_attach (ui->output, robtk_dial_widget (ui->mst_gain), 0, 2, outRow, outRow + 2, 2, 0, RTK_SHRINK, RTK_SHRINK);
 	}
+	outRow += 2;
+	printf ("--- Row: %d\n", outRow);
 
 	/* output level + labels */
 	for (unsigned int o = 0; o < ui->device->smst; ++o) {
-		int row = 4 * floor (o / 8); // beware of bleed into Hi-Z, Pads
+		int row = outRow + 4 * floor (o / 8); // beware of bleed into Hi-Z, Pads
 		int oc = o % 8;
 
 		ui->out_lbl[o]  = robtk_lbl_new (out_gain_label (ui, o));
@@ -1586,9 +1698,12 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 		memcpy (ui->out_gain[o]->rw->name, &o, sizeof (unsigned int));
 	}
 
+	outRow += outRow + 4 * floor (ui->device->smst / 8) + 2;
+	printf ("--- Row: %d\n", outRow);
+
 	/* aux mono outputs & labels */
 	for (unsigned int o = 0; o < ui->device->samo; ++o) {
-		int row = floor (o / 8); // beware of bleed into Hi-Z, Pads
+		int row = outRow + floor (o / 8); // beware of bleed into Hi-Z, Pads
 		int oc = o % 8;
 
 		ui->aux_lbl[o]  = robtk_lbl_new (aux_gain_label (ui, o));
@@ -1613,70 +1728,25 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 
 		memcpy (ui->aux_gain[o]->rw->name, &o, sizeof (unsigned int));
 	}
-	int max = ui->device->sout - ui->device->samo - (ui->device->smst * 2);
-	max = 2;
-	for (unsigned int o = 0; o < max; ++o) {
-		int row_base = (o + ui->device->samo + (ui->device->smst * 2));
-		int row = 4 * floor (row_base / 6); // beware of bleed into Hi-Z, Pads
-		ui->sel_lbl[o]  = robtk_lbl_new (out_select_label (ui, o));
-		rob_table_attach (ui->output, robtk_lbl_widget (ui->sel_lbl[o]), o, o+1, row, row + 1, 2, 2, RTK_SHRINK, RTK_SHRINK);
+
+	outRow += floor( ui->device->samo / 8 ) + 2;
+	printf ("--- Row: %d\n", outRow);
+
+	rob_table_attach (ui->output, robtk_sep_widget (ui->sep_h[2]), 0, maxCols, outRow, outRow+1, maxCols, 0, RTK_FILL, RTK_FILL);
+
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
+
+	if (ui->device->sout > 0){
+		rob_table_attach (ui->output, robtk_lbl_widget (ui->heading[5]), 0, 1 + ui->device->sout, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 
-	// 48V Phantom Power 
-	if (ui->device->phantom_power_map>-1) {
-		ui->btn_phantom_power = robtk_cbtn_new ("48V", GBT_LED_LEFT, false);
-		robtk_cbtn_set_active (ui->btn_phantom_power, get_switch (phantom (ui)) == 1);
-		robtk_cbtn_set_callback (ui->btn_phantom_power, cb_set_phantom_power, ui);
-		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_phantom_power),
-				0, 1, 6, 7, 0, 0, RTK_SHRINK, RTK_SHRINK);
-	}
-	// Direct Monitoring 
-	if (ui->device->direct_monitor_map>-1) {
-		ui->btn_direct_monitor = robtk_cbtn_new ("Direct Monitor", GBT_LED_LEFT, false);
-		robtk_cbtn_set_active (ui->btn_direct_monitor, get_pb_switch (direct_monitor (ui)) == 1);
-		robtk_cbtn_set_callback (ui->btn_direct_monitor, cb_set_direct_monitor, ui);
-		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_direct_monitor),
-				0, 1, 7, 8, 0, 0, RTK_SHRINK, RTK_SHRINK);
-	}
-
-	// Hi-Z
-	for (unsigned int i = 0; i < ui->device->num_hiz; ++i) {
-		ui->btn_hiz[i] = robtk_cbtn_new ("HiZ", GBT_LED_LEFT, false);
-		robtk_cbtn_set_active (ui->btn_hiz[i], get_enum (hiz (ui, i)) == 1);
-		robtk_cbtn_set_callback (ui->btn_hiz[i], cb_set_hiz, ui);
-		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_hiz[i]),
-				i, i + 1, 8, 9, 0, 0, RTK_SHRINK, RTK_SHRINK);
-	}
-
-	// Pads 
-	for (unsigned int i = 0; i < ui->device->num_pad; ++i) {
-		ui->btn_pad[i] = robtk_cbtn_new ("Pad", GBT_LED_LEFT, false);
-		if (ui->device->pads_are_switches) {
-			robtk_cbtn_set_active (ui->btn_pad[i], get_switch (pad (ui, i)) == 1);
-		} else {
-			robtk_cbtn_set_active (ui->btn_pad[i], get_enum (pad (ui, i)) == 1);
-		}
-		robtk_cbtn_set_callback (ui->btn_pad[i], cb_set_pad, ui);
-		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_pad[i]),
-				i, i + 1, 9, 10, 0, 0, RTK_SHRINK, RTK_SHRINK);
-	}
-
-	// Airs 
-	for (unsigned int i = 0; i < ui->device->num_air; ++i) {
-		ui->btn_air[i] = robtk_cbtn_new ("Air", GBT_LED_LEFT, false);
-		if (ui->device->airs_are_enums) {
-			robtk_cbtn_set_active (ui->btn_air[i], get_enum (air (ui, i)) == 1);
-		} else {
-			robtk_cbtn_set_active (ui->btn_air[i], get_switch (air (ui, i)) == 1);
-		}
-		robtk_cbtn_set_callback (ui->btn_air[i], cb_set_air, ui);
-		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_air[i]),
-				i, i + 1, 10, 11, 0, 0, RTK_SHRINK, RTK_SHRINK);
-	}
+	++outRow;
+	printf ("--- Row: %d\n", outRow);
 
 	// output selectors 
 	for (unsigned int o = 0; o < ui->device->sout; ++o) {
-		int row = 12 + floor (o / 10) * 2; // beware of bleed into Hi-Z, Pads
+		int row = outRow + floor (o / 8) * 2; // beware of bleed into Hi-Z, Pads
 		int pc = 3 * (o / 2); // stereo-pair column 
 		pc %= 15;
 		ui->out_sel[o] = robtk_select_new ();
@@ -1699,8 +1769,8 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 			// mono channel 
 			pc = 3 * o;
 			ui->out_bus_lbl[o] = robtk_lbl_new (out_bus_select_label (ui, o));
-			rob_table_attach (ui->output, robtk_lbl_widget(ui->out_bus_lbl[o]), o % 10, (o % 10)+1,  row + 1, row + 2, 2, 2, RTK_SHRINK, RTK_SHRINK);			
-			rob_table_attach (ui->output, robtk_select_widget (ui->out_sel[o]), o % 10, (o % 10)+1,  row + 2, row + 3, 2, 2, RTK_SHRINK, RTK_SHRINK);
+			rob_table_attach (ui->output, robtk_lbl_widget(ui->out_bus_lbl[o]), o % 8, (o % 8)+1,  row + 1, row + 2, 2, 2, RTK_SHRINK, RTK_SHRINK);			
+			rob_table_attach (ui->output, robtk_select_widget (ui->out_sel[o]), o % 8, (o % 8)+1,  row + 2, row + 3, 2, 2, RTK_SHRINK, RTK_SHRINK);
 			//rob_table_attach (ui->output, robtk_select_widget (ui->out_sel[o]), 2 + pc, 5 + pc, row + 3, row + 4, 2, 2, RTK_SHRINK, RTK_SHRINK);
 		}
 	}
@@ -1712,11 +1782,9 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 	robtk_pbtn_set_callback_up (ui->btn_reset, cb_btn_reset, ui);
 #endif
 
-	ui->sep_h = robtk_sep_new (TRUE);
-
 	/* top-level packing */
 	rob_vbox_child_pack (ui->rw, ui->matrix, TRUE, TRUE);
-	rob_vbox_child_pack (ui->rw, robtk_sep_widget (ui->sep_h), TRUE, TRUE);
+	rob_vbox_child_pack (ui->rw, robtk_sep_widget (ui->sep_h[0]), TRUE, TRUE);
 	rob_vbox_child_pack (ui->rw, ui->output, TRUE, TRUE);
 	return ui->rw;
 }
@@ -1773,8 +1841,14 @@ static void gui_cleanup (RobTkApp* ui) {
 		robtk_cbtn_destroy (ui->btn_air[i]);
 	}
 
+	for (int i = 0; i < ui->device->num_pwr; i++) {
+		robtk_cbtn_destroy (ui->btn_phantom_power[i]);
+	}
+
 	robtk_sep_destroy (ui->sep_v);
-	robtk_sep_destroy (ui->sep_h);
+	robtk_sep_destroy (ui->sep_h[0]);
+	robtk_sep_destroy (ui->sep_h[1]);
+	robtk_sep_destroy (ui->sep_h[2]);
 	robtk_sep_destroy (ui->spc_v[0]);
 	robtk_sep_destroy (ui->spc_v[1]);
 
