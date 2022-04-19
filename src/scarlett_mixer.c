@@ -1570,23 +1570,25 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 	rob_table_attach (ui->output, robtk_lbl_widget (ui->heading[3]), 0, 8, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
-	// 48V Phantom Power 
-	// The following line might not work for all devices...
-	int pwr_spread = ui->device->num_pad / ui->device->num_pwr;
-	// ... then set it to a default value
-	if( pwr_spread == 0 )
-		pwr_spread = 1;
-	for (unsigned int i = 0; i < ui->device->num_pwr; ++i) {
-		ui->btn_phantom_power[i] = robtk_cbtn_new ("48V", GBT_LED_LEFT, false);
-		robtk_cbtn_set_active (ui->btn_phantom_power[i], get_switch (phantom (ui, i )) == 1);
-		robtk_cbtn_set_callback (ui->btn_phantom_power[i], cb_set_phantom_power, ui);
-		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_phantom_power[i]),
-				i*pwr_spread, i*pwr_spread+1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+	if( ui->device->num_pwr > 0 ) {
+		// 48V Phantom Power 
+		// The following line might not work for all devices...
+		int pwr_spread = ui->device->num_pad / ui->device->num_pwr;
+		// ... then set it to a default value
+		if( pwr_spread == 0 )
+			pwr_spread = 1;
+		for (unsigned int i = 0; i < ui->device->num_pwr; ++i) {
+			ui->btn_phantom_power[i] = robtk_cbtn_new ("48V", GBT_LED_LEFT, false);
+			robtk_cbtn_set_active (ui->btn_phantom_power[i], get_switch (phantom (ui, i )) == 1);
+			robtk_cbtn_set_callback (ui->btn_phantom_power[i], cb_set_phantom_power, ui);
+			rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_phantom_power[i]),
+					i*pwr_spread, i*pwr_spread+1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+		}
+		++outRow;
+		
 	}
-	++outRow;
-	printf ("--- Row: %d\n", outRow);
 
 	// Direct Monitoring 
 	if (ui->device->direct_monitor_map>-1) {
@@ -1597,7 +1599,7 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 				0, 1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 	++outRow;	
-	printf ("--- Row: %d\n", outRow);
+	
 
 	// Hi-Z
 	for (unsigned int i = 0; i < ui->device->num_hiz; ++i) {
@@ -1608,7 +1610,7 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 				i, i + 1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	// Pads 
 	for (unsigned int i = 0; i < ui->device->num_pad; ++i) {
@@ -1623,7 +1625,7 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 				i, i + 1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	// Airs 
 	for (unsigned int i = 0; i < ui->device->num_air; ++i) {
@@ -1639,19 +1641,19 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 	}
 
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	rob_table_attach (ui->output, robtk_sep_widget (ui->sep_h[1]), 0, maxCols, outRow, outRow+1, maxCols, 0, RTK_FILL, RTK_FILL);
 
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	if (ui->device->sout > 0){
 		rob_table_attach (ui->output, robtk_lbl_widget (ui->heading[4]), 0, 1 + ui->device->sout, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	/*** output Table ***/
 
@@ -1677,7 +1679,7 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 		rob_table_attach (ui->output, robtk_dial_widget (ui->mst_gain), 0, 2, outRow, outRow + 2, 2, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 	outRow += 2;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	/* output level + labels */
 	for (unsigned int o = 0; o < ui->device->smst; ++o) {
@@ -1708,7 +1710,7 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 	}
 
 	outRow += outRow + 4 * floor (ui->device->smst / 8) + 2;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	/* aux mono outputs & labels */
 	for (unsigned int o = 0; o < ui->device->samo; ++o) {
@@ -1739,19 +1741,19 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 	}
 
 	outRow += floor( ui->device->samo / 8 ) + 2;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	rob_table_attach (ui->output, robtk_sep_widget (ui->sep_h[2]), 0, maxCols, outRow, outRow+1, maxCols, 0, RTK_FILL, RTK_FILL);
 
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	if (ui->device->sout > 0){
 		rob_table_attach (ui->output, robtk_lbl_widget (ui->heading[5]), 0, 1 + ui->device->sout, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 
 	++outRow;
-	printf ("--- Row: %d\n", outRow);
+	
 
 	// output selectors 
 	for (unsigned int o = 0; o < ui->device->sout; ++o) {

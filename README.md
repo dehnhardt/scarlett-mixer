@@ -1,6 +1,10 @@
 Graphical Mixer Interface for the Scarlett series
 =================================================
 
+this is based on https://github.com/x42/scarlett-mixer
+
+**The X42 Version supported the following interfaces:**
+
 Currently supported models, first generation of
 - 18i6
 - 18i8
@@ -13,7 +17,8 @@ WiP Scarlett Focusrite 3rd gen
 - 4i4
 - 8i6
 
-based on https://github.com/HinTak/sound-usb-dkms branch v5.11-sadko4u-scarlett-gen3
+**This version supports the Scarlett 18i20 v3 interface**
+**If the other interfaces still work without problems with my changes is uncertain**
 
 This is just a GUI, the device **must** be supported by the ALSA Linux kernel device-driver.
 
@@ -31,7 +36,7 @@ Build-dependencies: gnu-make, a c-compiler, pkg-config, libpango, libcairo,
 lv2 (SDK), alsa (libasound) and openGL (sometimes called: glu, glx, mesa).
 
 ```bash
-  git clone git://github.com/x42/scarlett-mixer
+  git clone git://https://github.com/dehnhardt/scarlett-mixer
   cd scarlett-mixer
   git submodule init
   git submodule update
@@ -48,10 +53,4 @@ Usage (run from source-dir)
 
 Screenshot
 ----------
-
-![screenshot](https://raw.github.com/x42/scarlett-mixer/master/scarlett-mixer-gui.png "Scarlett 18i6 Mixer")
-
-See also
---------
-
-ALSA Mixer in HTLM-5 with ALSA JSON Gateway: https://github.com/fulup-bzh/AlsaJsonGateway
+![Scarlett18i20v3](https://user-images.githubusercontent.com/5556832/164079652-a4284f3f-98d2-47ff-9beb-301f0a2f566e.png)
