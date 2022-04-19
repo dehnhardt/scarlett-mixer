@@ -82,7 +82,7 @@ typedef struct {
 	int         pad_map[MAX_PADS];
 	int         air_map[MAX_AIRS];
 	int		    direct_monitor_map;    // map to DM Switch if present, else -1
-	int 	    phantom_power_map[MAX_PHANTOM];     // map to 48V phantom power switch if present, else -1
+	int 	    phantom_power_map[MAX_PHANTOM];     // array with maps to 48V phantom power switch if present, else empty
 } Device;
 
 static Device devices[] = {
@@ -368,6 +368,7 @@ typedef struct {
 	unsigned int ctrl_cnt;
 	snd_mixer_t* mixer;
 
+	unsigned int analog_in_cnt;
 	int nfds;
 	struct pollfd* pollfds;
 	bool disable_signals;
@@ -589,6 +590,8 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 	snd_ctl_card_info_t *card_info;
 	snd_ctl_card_info_alloca (&card_info);
 
+	ui->analog_in_cnt = 0;
+
 	if ((err = snd_ctl_open (&hctl, card, 0)) < 0) {
 		fprintf (stderr, "Control device %s open error: %s\n", card, snd_strerror (err));
 		return err;
@@ -723,6 +726,8 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 
 		if (opts & OPT_DETECT) {
 			if (snd_mixer_selem_is_enumerated (elem)) {
+				if( strstr ( c->name, "Analogue" ) )
+					ui->analog_in_cnt++;
 				if (strstr (c->name, " Impedance") || strstr (c->name, " Level")) {
 					d.hiz_map[d.num_hiz++] = i;
 				}
@@ -797,7 +802,6 @@ static int open_mixer (RobTkApp* ui, const char* card, int opts)
 					d.air_map[d.num_air++] = i;
 				} else if (strstr(c->name," Phantom Power")){
 					d.phantom_power_map[d.num_pwr++] = i;
-					// d.phantom_power_map = i;
 				}
 			} else {
 				if (strlen ( c->name ) > 9 && (strstr (c->name, "Line 0") || strstr (c->name, "Line 1"))) {
@@ -1569,12 +1573,17 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 	printf ("--- Row: %d\n", outRow);
 
 	// 48V Phantom Power 
+	// The following line might not work for all devices...
+	int pwr_spread = ui->device->num_pad / ui->device->num_pwr;
+	// ... then set it to a default value
+	if( pwr_spread == 0 )
+		pwr_spread = 1;
 	for (unsigned int i = 0; i < ui->device->num_pwr; ++i) {
 		ui->btn_phantom_power[i] = robtk_cbtn_new ("48V", GBT_LED_LEFT, false);
 		robtk_cbtn_set_active (ui->btn_phantom_power[i], get_switch (phantom (ui, i )) == 1);
 		robtk_cbtn_set_callback (ui->btn_phantom_power[i], cb_set_phantom_power, ui);
 		rob_table_attach (ui->output, robtk_cbtn_widget (ui->btn_phantom_power[i]),
-				i, i+1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
+				i*pwr_spread, i*pwr_spread+1, outRow, outRow+1, 0, 0, RTK_SHRINK, RTK_SHRINK);
 	}
 	++outRow;
 	printf ("--- Row: %d\n", outRow);
@@ -1771,7 +1780,6 @@ static RobWidget* toplevel (RobTkApp* ui, void* const top) {
 			ui->out_bus_lbl[o] = robtk_lbl_new (out_bus_select_label (ui, o));
 			rob_table_attach (ui->output, robtk_lbl_widget(ui->out_bus_lbl[o]), o % 8, (o % 8)+1,  row + 1, row + 2, 2, 2, RTK_SHRINK, RTK_SHRINK);			
 			rob_table_attach (ui->output, robtk_select_widget (ui->out_sel[o]), o % 8, (o % 8)+1,  row + 2, row + 3, 2, 2, RTK_SHRINK, RTK_SHRINK);
-			//rob_table_attach (ui->output, robtk_select_widget (ui->out_sel[o]), 2 + pc, 5 + pc, row + 3, row + 4, 2, 2, RTK_SHRINK, RTK_SHRINK);
 		}
 	}
 
